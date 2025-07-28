@@ -5,7 +5,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/executable",
+            "program": "${workspaceFolder}/build/SDLProject",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
