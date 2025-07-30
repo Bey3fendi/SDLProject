@@ -1,0 +1,159 @@
+#include <SDL2/SDL_error.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_keyboard.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_video.h>
+#include <SDL2/SDL_ttf.h>
+#include <cstdlib>
+#include <iostream>
+#include <random>
+#include "SDL2/SDL.h"
+
+constexpr int WIDTH = 800;
+constexpr int HEIGHT = 640;
+const char MY_FONT[48] = "a";  //"/usr/share/fonts/truetype/freefont/FreeSans.ttf"; need to download a font and give relative path
+
+int getRandomCoordinates(int max = 500) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, max);
+    return dist(gen);
+}
+
+int main() {
+    //init SDL Library =>
+    if(SDL_Init(SDL_INIT_VIDEO) != 0) {
+        std::cerr << "SDL initialization Error: " << SDL_GetError() << "\n";
+        return 1;
+    }
+
+    // Init SDL_ttf
+    if (TTF_Init() < 0) {
+        printf("SDL_ttf could not initialize! TTF_Error: %s\n", TTF_GetError());
+        SDL_Quit();
+        return EXIT_FAILURE;
+    }
+
+    //Create Window =>
+    SDL_Window* window = SDL_CreateWindow("Example2", 
+                                                SDL_WINDOWPOS_CENTERED, //x coordinate of window
+                                                SDL_WINDOWPOS_CENTERED, //y coordinate of window
+                                                WIDTH, //resolution
+                                                HEIGHT, //resolution
+                                            SDL_WINDOW_RESIZABLE //create resizable window
+    );
+
+    if(!window) {
+        std::cerr << "SDL Window Creation Error: " << SDL_GetError() << "\n";
+        SDL_Quit();
+        return 1;
+    }
+
+    //Create Renderer =>
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,  SDL_RENDERER_ACCELERATED);
+
+    if(!renderer) {
+        std::cerr << "SDL Renderer Creation Error: " << SDL_GetError() << "\n";
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
+
+    bool running = true;
+    bool showOutline = false;
+    bool firstOutlineCreation = true;
+    int boxXCoordination = 0;
+    int boxYCoordination = 0;
+    const int boxInterval = 7000; // 3 seconds
+    Uint32 lastBoxTime = SDL_GetTicks();
+    int score = 0;
+    int lastScore = score;
+    int mx = 0;
+    int my = 0;
+    std::string score_string = std::to_string(score);
+    SDL_Rect outline = {};
+    TTF_Font *font = TTF_OpenFont(MY_FONT, 40); // specify the path to your font file and font size
+    SDL_Event event; //create a object/instance of SDL_Event union-struct
+
+    if (!font){
+      std::cerr << "Failed to load font\n";
+    }
+
+    SDL_Texture *textTexture = nullptr;
+    SDL_Surface *textSurface = nullptr;
+
+    SDL_Color textColor = {0, 0, 0, 255}; // black color
+    textSurface = TTF_RenderText_Solid(font, score_string.c_str(), textColor);
+    textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+
+    while (running) {
+        Uint32 currentTime = SDL_GetTicks();
+        if (currentTime - lastBoxTime >= boxInterval) {
+            boxXCoordination = getRandomCoordinates();
+            boxYCoordination = getRandomCoordinates();
+            outline = {boxXCoordination, boxYCoordination, 300, 200};
+            showOutline = true;
+            lastBoxTime = currentTime;
+        }
+        //queue and handle all events
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT:
+                    std::cout << "QUIT event!";
+                    running = false;
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    mx = event.button.x;
+                    my = event.button.y;
+                    if((mx >= boxXCoordination && mx <= boxXCoordination + 300) && 
+                       (my >= boxYCoordination && my <= boxYCoordination + 200 )) {
+                        score++;
+                        std::cout << "score: " << score << "\n";
+                        showOutline = false;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        //Rendering a Red screen contionusly
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        //Render a blue outline if flag true
+        if(showOutline) {
+            SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // Blue
+            SDL_RenderDrawRect(renderer, &outline);
+        }
+
+        if(score != lastScore) {
+            std::string score_string = std::to_string(score);
+            if (textSurface) SDL_FreeSurface(textSurface);
+            if (textTexture) SDL_DestroyTexture(textTexture);
+
+            score_string = std::to_string(score);
+            textSurface = TTF_RenderText_Solid(font, score_string.c_str(), textColor);
+            textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        }
+
+        if (textTexture && textSurface) {
+            SDL_Rect textRect = {520, 520, textSurface->w, textSurface->h};
+            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        }   
+
+        SDL_RenderPresent(renderer);
+        SDL_Delay(5);
+    }
+
+    //clean
+    if (textSurface) SDL_FreeSurface(textSurface);
+    if (textTexture) SDL_DestroyTexture(textTexture);
+    TTF_CloseFont(font);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    TTF_Quit();
+    SDL_Quit();
+    return 0;
+}

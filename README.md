@@ -6,6 +6,6 @@ Try doing some game with SDL2
 ```bash
 $>./install_dependency.sh
 $>mkdir build
-$>cmake -DCMAKE_BUILD_TYPE=Debug ..
+$>cmake -DCMAKE_BUILD_TYPE=Debug .. || $>cmake -DCMAKE_BUILD_TYPE=Release ..
 $>cmake --build .
 ```
