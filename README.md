@@ -1,6 +1,11 @@
 # SDLProject
 Try doing some game with SDL2
 
-cmake -DCMAKE_BUILD_TYPE=Debug .. //for set build type to Debug
+## Build Steps:
+In the project root dir, run following commands to build:
+'''bash
+$>./install_dependency.sh
+$>mkdir build
+$>cmake -DCMAKE_BUILD_TYPE=Debug ..
+$>cmake --build .
 
-cmake -DCMAKE_BUILD_TYPE=Release .. //for set build type to Release

@@ -2,7 +2,16 @@ cmake_minimum_required(VERSION 3.10)
 
 project(SDLProject VERSION 1.0.0)
 
-add_executable(SDLProject main.cpp) # Add your source files here
+find_package(PkgConfig REQUIRED)
 
-target_include_directories(SDLProject PRIVATE /usr/include/SDL2)
-target_link_libraries(SDLProject PRIVATE SDL2)
+pkg_check_modules(SDL2 REQUIRED sdl2)
+
+message(STATUS "Current build type: ${CMAKE_BUILD_TYPE}")
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
+
+add_executable(${PROJECT_NAME} main.cpp)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})

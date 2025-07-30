@@ -1,0 +1,71 @@
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
+#include <atomic>
+#include <chrono>
+#include <cstdlib>
+#include <future>
+#include <iostream>
+#include <thread>
+#include "SDL2/SDL.h"
+
+
+#define SCREEN_WIDTH    800
+#define SCREEN_HEIGHT   600
+
+static void Sleep(int duration_ms){
+    std::this_thread::sleep_for(std::chrono::milliseconds(duration_ms));
+}
+
+int main(int argc, char* argv[])
+{
+    // Unused argc, argv
+    (void) argc;
+    (void) argv;
+
+    // Initialize SDL
+    if(SDL_Init(SDL_INIT_VIDEO) < 0)
+    {
+        std::cout << "SDL could not be initialized!" << std::endl
+                  << "SDL_Error: " << SDL_GetError() << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    std::cout << "Create WIndow!\n";
+    SDL_Window* window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    std::cout << "Create Render\n";
+    SDL_Renderer *render = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE );
+    std::cout << "Create DrowColor\n";
+    SDL_SetRenderDrawColor(render, 200, 150, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(render);
+    SDL_RenderPresent(render);
+    std::atomic<bool> is_stopped {false};
+    auto async_ret = std::async([&is_stopped]{
+        Sleep(7000);
+        std::cout << "async_ret Stopped\n";
+        is_stopped = true;
+    });
+    while (!is_stopped) {
+        SDL_Event event;
+        SDL_PollEvent(&event);
+        switch (event.type) {
+            case SDL_QUIT:
+                std::cout <<"SDLQUIT\n";
+                is_stopped = true;
+            break;
+            default:
+            break;
+        }
+    }
+    
+    std::cout << "Create DestroyWIndows\n";
+    SDL_DestroyRenderer(render);
+    SDL_DestroyWindow(window);
+    
+    Sleep(2000);
+
+    SDL_Quit();
+    async_ret.get();
+    return 0;
+}
