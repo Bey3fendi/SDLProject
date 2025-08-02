@@ -1,55 +1,60 @@
+#include <SDL2/SDL_error.h>
 #include <SDL2/SDL_events.h>
-#include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
+#include <SDL2/SDL_ttf.h>
+#include <cstdlib>
+#include <memory>
 #include "SDL2/SDL.h"
-#include <iostream>
+#include "Logger.h"
+#include "render_manager.h"
+#include "Snake.h"
+#include "food.h"
 
-//basic example for window and renderer creation
-int main(int argc, char* argv[]) {
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        std::cerr << "SDL_Init Error: " << SDL_GetError() << "\n";
-        return 1;
+int main() {
+
+/*TestRenderManager && snake && food*/
+std::shared_ptr<RenderManager> render_manager = std::make_shared<RenderManager>();
+std::shared_ptr<Snake> snake = std::make_shared<Snake>(render_manager);
+std::shared_ptr<Food> food = std::make_unique<Food>(render_manager, snake);
+
+render_manager->CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_RESIZABLE);
+
+bool res = render_manager->CreateRenderer(-1, SDL_RENDERER_ACCELERATED);
+
+SDL_Rect outline = {72, 0, SNAKE_SQUARE_WIDTH, SNAKE_SQUARE_HEIGHT};
+SDL_Rect outline2 = {96, 0, SNAKE_SQUARE_WIDTH, SNAKE_SQUARE_HEIGHT};
+SDL_Rect outline3 = {120, 0, SNAKE_SQUARE_WIDTH, SNAKE_SQUARE_HEIGHT};
+snake->AddNewTileToSnake(outline);
+snake->AddNewTileToSnake(outline2);
+snake->AddNewTileToSnake(outline3);
+
+int current_time = SDL_GetTicks();
+bool is_stopped = true;
+bool showRect = true;
+while(is_stopped) {
+    render_manager->SetRenderDrawColour(SurfaceColour::kPink);
+    render_manager->Clear();
+
+    if(showRect) {
+        // render_manager->SetRenderDrawColour(SurfaceColour::kBlack);
+        // render_manager->DrawRect(outline);
+        // render_manager->FulfillRect(outline);
+        snake->DrawSnake();
+        food->DrawFood();
     }
 
-    // Create SDL Window
-    SDL_Window* window = SDL_CreateWindow("SDL Renderer Example", //window title
-                                          SDL_WINDOWPOS_CENTERED, // window position x
-                                          SDL_WINDOWPOS_CENTERED, //window position y
-                                          640, 480, // resoulition
-                                          SDL_WINDOW_SHOWN);
-    if (!window) {
-        std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << "\n";
-        SDL_Quit();
-        return 1;
+    render_manager->RenderPresent();
+    int last_time = SDL_GetTicks();
+    if(last_time - current_time >= 10000) {
+        is_stopped = false;
     }
+}
 
-    // Create Renderer
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << "\n";
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
+SDL_Delay(10000);
 
-    // Set draw color to red and clear the screen
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_RenderClear(renderer);
-
-    // Present the renderer
-    SDL_RenderPresent(renderer);
-
-    // Wait for 3 seconds
-    SDL_Delay(5000);
-
-    // Cleanup
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-
-    return 0;
+SDL_Quit();
 }

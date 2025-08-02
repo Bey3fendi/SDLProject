@@ -66,7 +66,7 @@ int main() {
     bool firstOutlineCreation = true;
     int boxXCoordination = 0;
     int boxYCoordination = 0;
-    const int boxInterval = 7000; // 3 seconds
+    const int boxInterval = 2000; // 3 seconds
     Uint32 lastBoxTime = SDL_GetTicks();
     int score = 0;
     int lastScore = score;
