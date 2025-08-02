@@ -31,6 +31,7 @@ SDL_Rect outline3 = {120, 0, SNAKE_SQUARE_WIDTH, SNAKE_SQUARE_HEIGHT};
 snake->AddNewTileToSnake(outline);
 snake->AddNewTileToSnake(outline2);
 snake->AddNewTileToSnake(outline3);
+SDL_Rect food_coordinates {};
 
 int current_time = SDL_GetTicks();
 bool is_stopped = true;
@@ -43,8 +44,10 @@ while(is_stopped) {
         // render_manager->SetRenderDrawColour(SurfaceColour::kBlack);
         // render_manager->DrawRect(outline);
         // render_manager->FulfillRect(outline);
+        food_coordinates = food->generateFoodCoordinate(snake->GetSnakeCoordinates());
+        food->SetFoodCoordinates(food_coordinates);
         snake->DrawSnake();
-        food->DrawFood();
+        food->DrawFood(food_coordinates);
     }
 
     render_manager->RenderPresent();
@@ -52,9 +55,10 @@ while(is_stopped) {
     if(last_time - current_time >= 10000) {
         is_stopped = false;
     }
+    SDL_Delay(100);
 }
 
-SDL_Delay(10000);
+SDL_Delay(2000);
 
 SDL_Quit();
 }

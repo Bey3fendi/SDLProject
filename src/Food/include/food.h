@@ -3,7 +3,7 @@
 #include <SDL2/SDL_rect.h>
 #include <memory>
 #include "render_manager.h"
-#include "Snake.h" // TODO: fix it after done CMake of food module
+#include "Snake.h"
 
 constexpr int FOOD_SQUARE_WIDTH = 24;
 constexpr int FOOD_SQUARE_HEIGHT = 24;
@@ -14,12 +14,13 @@ public:
 
     virtual SDL_Rect GetFoodCoordinates();
     virtual void SetFoodCoordinates(const SDL_Rect& new_food_coordinates);
-    virtual void DrawFood();
+    virtual void DrawFood(const SDL_Rect& food_coordinates);
+    virtual SDL_Rect generateFoodCoordinate(const std::array<SDL_Rect, 900>& snake_coords);
 
     virtual ~Food() = default;
 
 private:
-    SDL_Rect generateFoodCoordinate(const std::array<SDL_Rect, 900>& snake_coords);
+    //TODO: These logic might be moved into ProcessManager in the future!!
 
     SDL_Rect coordinates_of_food_{};
     std::shared_ptr<RenderManager> render_manager_;

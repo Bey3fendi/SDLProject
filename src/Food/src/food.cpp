@@ -13,11 +13,10 @@ void Food::SetFoodCoordinates(const SDL_Rect& new_food_coordinates) {
     coordinates_of_food_ = new_food_coordinates;
 }
 
-void Food::DrawFood() {
-    coordinates_of_food_ = generateFoodCoordinate(snake_->GetSnakeCoordinates());
+void Food::DrawFood(const SDL_Rect& food_coordinates) {
     render_manager_->SetRenderDrawColour(SurfaceColour::kBlue);
-    render_manager_->DrawRect(coordinates_of_food_);
-    render_manager_->FulfillRect(coordinates_of_food_);
+    render_manager_->DrawRect(food_coordinates);
+    render_manager_->FulfillRect(food_coordinates);
 }
 
 SDL_Rect Food::generateFoodCoordinate(const std::array<SDL_Rect, 900>& snake_coords) {
