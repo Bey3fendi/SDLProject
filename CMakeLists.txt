@@ -18,8 +18,17 @@ add_subdirectory(src/RenderManager)
 add_subdirectory(src/Snake)
 add_subdirectory(src/Food)
 
+set(MY_PROJECT_LIBS
+    ${SDL2_LIBRARIES}
+    ${SDL2_TTF_LIBRARIES}
+    logger
+    rendermanager
+    snake
+    food
+)
+
 add_executable(${PROJECT_NAME} main.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} logger rendermanager snake food)
+target_link_libraries(${PROJECT_NAME} PRIVATE  ${MY_PROJECT_LIBS})
