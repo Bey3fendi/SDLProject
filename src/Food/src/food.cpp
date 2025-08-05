@@ -25,6 +25,7 @@ SDL_Rect Food::generateFoodCoordinate(const std::array<SDL_Rect, 900>& snake_coo
 
     std::vector<SDL_Rect> free_tiles;
 
+    //get a tile every time and check the snake occupied there or not
     for (int row = 0; row < grid_size; ++row) {
         for (int col = 0; col < grid_size; ++col) {
             SDL_Rect tile = { col * tile_size, row * tile_size, tile_size, tile_size };
@@ -36,16 +37,17 @@ SDL_Rect Food::generateFoodCoordinate(const std::array<SDL_Rect, 900>& snake_coo
                     break;
                 }
             }
-
+            //if it is not occupied push back into the free_tiles.
             if (!occupied)
                 free_tiles.push_back(tile);
         }
     }
 
-    if (free_tiles.empty()) {
+    if (free_tiles.empty()) { //TODO: this mean game beated. will handle it more gracefully.
         throw std::runtime_error("No free tiles left to place food!");
     }
 
+    //generate random index for select random free tile return it 
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<> dist(0, static_cast<int>(free_tiles.size() - 1));

@@ -15,12 +15,11 @@ public:
     virtual SDL_Rect GetFoodCoordinates();
     virtual void SetFoodCoordinates(const SDL_Rect& new_food_coordinates);
     virtual void DrawFood(const SDL_Rect& food_coordinates);
-    virtual SDL_Rect generateFoodCoordinate(const std::array<SDL_Rect, 900>& snake_coords);
+    virtual SDL_Rect generateFoodCoordinate(const std::array<SDL_Rect, 900>& snake_coords);//TODO: The logic in it will be moved into ProcessManager in the future!!
 
     virtual ~Food() = default;
 
 private:
-    //TODO: These logic might be moved into ProcessManager in the future!!
 
     SDL_Rect coordinates_of_food_{};
     std::shared_ptr<RenderManager> render_manager_;
