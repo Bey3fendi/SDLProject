@@ -7,7 +7,11 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(SDL2_TTF REQUIRED SDL2_ttf)
 
-message(STATUS "Current build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "SDL2 Include dirs: ${SDL2_INCLUDE_DIRS}")
+message(STATUS "SDL2 Libraries: ${SDL2_LIBRARIES}")
+
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS})
+link_directories(${SDL2_LIBRARY_DIRS} ${SDL2_TTF_LIBRARY_DIRS})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
 
@@ -30,5 +34,4 @@ set(MY_PROJECT_LIBS
 add_executable(${PROJECT_NAME} main.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS})
-
-target_link_libraries(${PROJECT_NAME} PRIVATE  ${MY_PROJECT_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${MY_PROJECT_LIBS})
