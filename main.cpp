@@ -12,14 +12,15 @@
 #include "Logger.h"
 #include "render_manager.h"
 #include "Snake.h"
-#include "food.h"
+#include "food_factory.h"
+#include "snake_factory.h"
 
 int main() {
 
 /*TestRenderManager && snake && food*/
 std::shared_ptr<RenderManager> render_manager = std::make_shared<RenderManager>();
-std::shared_ptr<Snake> snake = std::make_shared<Snake>(render_manager);
-std::shared_ptr<Food> food = std::make_unique<Food>(render_manager, snake);
+auto snake = SnakeFactory::Create(render_manager);
+auto food = FoodFactory::Create(render_manager, snake);
 
 render_manager->CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_RESIZABLE);
 

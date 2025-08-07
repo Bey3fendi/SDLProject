@@ -3,7 +3,7 @@
 
 RenderManager::RenderManager() = default;
 
-bool RenderManager::CreateWindow(const char* title, int x, int y, int w, int h, Uint32 flag) {
+bool RenderManager::CreateWindow(const char* title, int x, int y, int w, int h, Uint32 flag) { //TODO: will be moved into the WindowManager
     bool result = false;
     window_ = SDL_CreateWindow(title, x, y, w, h, flag);
 
@@ -16,7 +16,7 @@ bool RenderManager::CreateWindow(const char* title, int x, int y, int w, int h, 
     return result;
 }
 
-SDL_Window* RenderManager::GetWindow() {
+SDL_Window* RenderManager::GetWindow() {//TODO: will be moved into the WindowManager
     if (window_) {
         return window_;
     } else {
